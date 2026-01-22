@@ -1,37 +1,38 @@
-import Button from "./Button.jsx";
-
+import Button from "./Button";
 export default function Sidebar({
   onCreateProject,
-  projectList,
-  selectProject,
+  projects,
   selectedProjectId,
+  selectProject,
 }) {
   return (
-    <aside className="w-1/3 bg-black text-white p-4 rounded-r-2xl">
-      <h2 className="text-3xl font-bold my-10">YOUR PROJECTS</h2>
-
+    <aside className="w-1/4 bg-stone-950 rounded-r-2xl pt-8 px-8">
+      <h2 className="text-stone-100 uppercase font-bold text-2xl">
+        your projects
+      </h2>
       <Button onClick={onCreateProject}>+ Add Project</Button>
 
-      <ul className="mt-8 space-y-4">
-        {projectList.length === 0 ? (
-          <p className="text-stone-400">No projects available.</p>
-        ) : (
-          projectList.map((project) => {
-            let classNames =
-              "w-full text-left p-4 rounded hover:bg-stone-800 hover:text-stone-200 cursor-pointer transition";
+      <ul>
+        {projects.length > 0 &&
+          projects.map((project) => {
+            let className =
+              "px-6 py-4 my-2 w-full rounded-lg hover:bg-stone-700 text-stone-400 cursor-pointer";
 
-            if (project.id === selectedProjectId) {
-              classNames += " bg-stone-800 active:text-stone-200";
-            } else {
-              classNames += " text-stone-400";
+            if (project.projectId == selectedProjectId) {
+              className += " bg-stone-700 text-stone-100";
             }
-
             return (
-              <li key={project.id} onClick={() => selectProject(project.id)}>
-                <button className={classNames}>{project.title}</button>
+              <li
+                key={project.projectId}
+                className={className}
+                onClick={() => selectProject(project.projectId)}
+              >
+                <button>{project.title}</button>
               </li>
             );
-          })
+          })}
+        {projects.length === 0 && (
+          <p className="text-stone-400 mt-4">No projects available.</p>
         )}
       </ul>
     </aside>

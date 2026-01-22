@@ -1,35 +1,31 @@
 import { forwardRef } from "react";
 
 const Input = forwardRef(function Input(
-  { textarea = false, handleChange, label, projectList, ...props },
+  { label, textarea = false, ...props },
   ref,
 ) {
-  const inputClasses =
-    "focus:outline-none border-stone-300 focus:border-stone-500 border-b-2 bg-stone-200 transition";
-
+  let classNames =
+    "focus:outline-none border-b-2 focus:border-stone-400 bg-stone-200 transition box-border p-1 rounded";
   return (
-    <div className="mt-6 flex flex-col">
-      <label htmlFor={label}>{label.toUpperCase()}</label>
-
+    <div className="flex flex-col mt-6">
+      <label className="text-stone-700 uppercase" htmlFor={label}>
+        {label}
+      </label>
       {textarea ? (
         <textarea
-          // value={projectList[label]}
-          // onChange={(event) => handleChange(label, event.target.value)}
-          ref={ref}
           name={label}
           id={label}
-          className={inputClasses}
+          ref={ref}
           {...props}
-        />
+          className={classNames}
+        ></textarea>
       ) : (
         <input
-          // value={projectList[label]}
-          // onChange={(event) => handleChange(label, event.target.value)}
+          {...props}
+          className={classNames}
           ref={ref}
           name={label}
           id={label}
-          className={inputClasses}
-          {...props}
         />
       )}
     </div>

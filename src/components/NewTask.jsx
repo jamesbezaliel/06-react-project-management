@@ -1,44 +1,39 @@
 import { useState, useRef } from "react";
-import Modal from "./Modal.jsx";
+import Modal from "./Modal";
 
-export default function NewTask({ onAdd }) {
+export default function NewTask({ onAddTask }) {
   const [task, setTask] = useState("");
   const modalRef = useRef();
 
-  function handleClick() {
-    // const enteredTask = taskInputRef.current.value;
-    // setTask((prevTasks) => [
-    //   ...prevTasks,
-    //   { id: crypto.randomUUID(), name: enteredTask },
-    // ]);
-    // taskInputRef.current.value = "";
+  function handleInputTask(event) {
+    setTask(event.target.value);
+  }
+
+  function handleClickAddTask() {
     if (task.trim() === "") {
       modalRef.current.open();
       return;
     }
-    onAdd(task);
-    setTask("");
-  }
 
-  function handleChange(event) {
-    setTask(event.target.value);
+    onAddTask(task);
+    setTask("");
   }
 
   return (
     <>
-      <Modal textButton="Okay" ref={modalRef}>
-        <h2>Invalid Input</h2>
-        <p>You should input a task.</p>
+      <Modal ref={modalRef}>
+        <h2>Please Input Task field</h2>
       </Modal>
-      <div>
-        <input
-          value={task}
-          onChange={handleChange}
-          type="text"
-          className="focus:outline-none bg-stone-200 transition mr-4 p-1 w-[45%]"
-        />
-        <button onClick={handleClick}>Add Task</button>
-      </div>
+      <h1 className="text-2xl text-stone-800 font-bold my-4">Tasks</h1>
+      <input
+        value={task}
+        onChange={handleInputTask}
+        className="bg-stone-200 p-1 focus:outline-none rounded w-1/2"
+        type="text"
+      />
+      <button onClick={handleClickAddTask} className="ms-4 text-stone-800">
+        Add Task
+      </button>
     </>
   );
 }

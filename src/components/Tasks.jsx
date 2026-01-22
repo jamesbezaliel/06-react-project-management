@@ -1,35 +1,30 @@
-import { useState, useRef } from "react";
-import NewTask from "./NewTask.jsx";
+import NewTask from "./NewTask";
 
-export default function Tasks({ onAdd, onDelete, tasks }) {
-  // const [tasks, setTasks] = useState([]);
-  // function handleClearTask(taskId) {
-  //   setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-  // }
-
+export default function Tasks({ tasks, onAddTask, onDeleteTask }) {
   return (
     <section>
-      <NewTask onAdd={onAdd} />
-
-      {tasks && tasks.length > 0 ? (
+      <NewTask onAddTask={onAddTask} />
+      {tasks.length > 0 ? (
         <ul className="mt-4">
-          {tasks.map((task) => (
-            <li
-              key={task.taskId}
-              className="flex justify-between bg-stone-200 p-4 first:rounded-t-lg last:rounded-b-lg"
-            >
-              <p>{task.task}</p>
-              <button
-                className="text-stone-600 hover:text-red-500 transition"
-                onClick={() => onDelete(task.taskId)}
+          {tasks.map((task) => {
+            return (
+              <li
+                key={task.id}
+                className="px-6 py-3 bg-stone-200 text-stone-800 first:rounded-t-lg last:rounded-b-lg flex justify-between items-center"
               >
-                Clear
-              </button>
-            </li>
-          ))}
+                {task.taskName}
+                <button
+                  className="text-stone-800"
+                  onClick={() => onDeleteTask(task.id)}
+                >
+                  Clear
+                </button>
+              </li>
+            );
+          })}
         </ul>
       ) : (
-        <p className="text-stone-400 mt-4">No tasks added yet.</p>
+        <p className="text-stone-400 mt-4">No tasks available.</p>
       )}
     </section>
   );

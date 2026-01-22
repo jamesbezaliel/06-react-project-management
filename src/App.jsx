@@ -1,27 +1,85 @@
-import Sidebar from "./components/Sidebar.jsx";
-import CreateProject from "./components/CreateProject.jsx";
-import NoProjects from "./components/NoProjects.jsx";
-import ProjectDetail from "./components/ProjectDetail.jsx";
 import { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import ProjectDetail from "./components/ProjectDetail";
+import NoProjects from "./components/NoProjects";
+import CreateProject from "./components/CreateProject";
 
-const PROJECTS_DATA = {
-  selectedProject: "not-set",
+// const PROJECT_DATA = {
+//   selectedProjectId: "not-set",
+//   projects: [],
+//   tasks: [],
+// };
+
+const PROJECT_DATA = {
+  selectedProjectId: "not-set",
   projects: [],
-  tasks: [],
 };
-function App() {
-  const [projectsState, setProjectsState] = useState(PROJECTS_DATA);
 
-  function handleAddTask(taskInput) {
+function App() {
+  const [projectsState, setProjectsState] = useState(PROJECT_DATA);
+
+  function handleCreateProject() {
+    setProjectsState((prevState) => ({
+      ...prevState,
+      selectedProjectId: "create-new",
+    }));
+  }
+
+  function handleCancelProject() {
+    setProjectsState((prevState) => ({
+      ...prevState,
+      selectedProjectId: "not-set",
+    }));
+  }
+
+  function handleAddProject(newProject) {
+    setProjectsState((prevState) => ({
+      ...prevState,
+      selectedProjectId: "not-set",
+      projects: [...prevState.projects, newProject],
+    }));
+  }
+
+  function handleSelectProject(projectId) {
+    setProjectsState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: projectId,
+      };
+    });
+  }
+
+  function handleDeleteProject() {
+    setProjectsState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: "not-set",
+        projects: prevState.projects.filter((project) => {
+          return project.projectId !== prevState.selectedProjectId;
+        }),
+      };
+    });
+  }
+
+  function handleAddTask(taskName) {
     const newTask = {
-      task: taskInput,
-      projectId: projectsState.selectedProject,
-      taskId: Date.now().toString(),
+      taskName: taskName,
+      projectId: projectsState.selectedProjectId,
+      id: Date.now().toString(),
     };
     setProjectsState((prevState) => {
       return {
         ...prevState,
-        ["tasks"]: [newTask, ...prevState.tasks],
+        ["projects"]: prevState.projects.map((project) => {
+          if (project.projectId === projectsState.selectedProjectId) {
+            return {
+              ...project,
+              tasks: project.tasks ? [...project.tasks, newTask] : [newTask],
+            };
+          }
+          return project;
+        }),
+        // ["tasks"]: [newTask, ...prevState.tasks],
       };
     });
   }
@@ -30,95 +88,53 @@ function App() {
     setProjectsState((prevState) => {
       return {
         ...prevState,
-        ["tasks"]: prevState.tasks.filter((task) => task.taskId !== taskId),
-      };
-    });
-  }
-
-  function handleCreateProject() {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedProject: "create-project",
-      };
-    });
-  }
-
-  function handleSubmitProject(projectData) {
-    const newProject = { ...projectData, id: Date.now().toString() };
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        ["projects"]: [...prevState.projects, newProject],
-        ["selectedProject"]: "not-set",
-      };
-    });
-  }
-
-  function selectProject(id) {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedProject: id,
-      };
-    });
-  }
-
-  function cancelProject() {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedProject: "not-set",
-      };
-    });
-  }
-
-  function handleDelete() {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        projects: prevState.projects.filter(
-          (project) => project.id !== prevState.selectedProject,
-        ),
-        selectedProject: "not-set",
+        ["projects"]: prevState.projects.map((project) => {
+          if (project.projectId === projectsState.selectedProjectId) {
+            return {
+              ...project,
+              tasks: project.tasks.filter((task) => task.id !== taskId),
+            };
+          }
+          return project;
+        }),
+        // ["tasks"]: prevState.tasks.filter((task) => task.id !== taskId),
       };
     });
   }
 
   let selectedProjectData = projectsState.projects.find(
-    (project) => project.id === projectsState.selectedProject,
+    (project) => project.projectId === projectsState.selectedProjectId,
   );
 
-  let projectContent = (
+  let content = (
     <ProjectDetail
       project={selectedProjectData}
-      onDelete={handleDelete}
       onAddTask={handleAddTask}
+      tasks={selectedProjectData?.tasks || []}
       onDeleteTask={handleDeleteTask}
-      tasks={projectsState.tasks}
+      onDeleteProject={handleDeleteProject}
     />
   );
-
-  if (projectsState.selectedProject == "not-set") {
-    projectContent = <NoProjects onCreateProject={handleCreateProject} />;
-  } else if (projectsState.selectedProject == "create-project") {
-    projectContent = (
+  if (projectsState.selectedProjectId === "not-set") {
+    content = <NoProjects onCreateProject={handleCreateProject} />;
+  } else if (projectsState.selectedProjectId === "create-new") {
+    content = (
       <CreateProject
-        onAddProject={handleSubmitProject}
-        cancelProject={cancelProject}
+        onCancelProject={handleCancelProject}
+        onAddProject={handleAddProject}
       />
     );
   }
 
   return (
-    <main className="flex pt-10 h-screen">
+    <main className="w-full h-screen flex pt-12">
       <Sidebar
         onCreateProject={handleCreateProject}
-        projectList={projectsState.projects}
-        selectProject={selectProject}
-        selectedProjectId={projectsState.selectedProject}
+        projects={projectsState.projects}
+        selectProject={handleSelectProject}
+        selectedProjectId={projectsState.selectedProjectId}
       />
-      {projectContent}
+      {content}
     </main>
   );
 }
